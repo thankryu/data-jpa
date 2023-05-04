@@ -1,5 +1,8 @@
 package study.datajpa.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,5 +41,13 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findListByUsername(String username); // 컬렉션
     Member findMemberByUsername(String username); // 단건
     Optional<Member> findOptionalByUsername(String username); // 단건 optional
+
+    // 성능이슈가 있을 때는 countQuery 별도로 처리할 수 있다
+    // sorting 이 복잡해질 경우 @Query에 sort 직접 하는것이 좋을때도 있다.
+    @Query(value = "select m from Member m left join m.team t",
+            countQuery = "select count(m) from Member m")
+    Page<Member> findByAge(int age, Pageable pageable);
+    // Slice<Member> findByAge(int age, Pageable pageable);
+    // List<Member> findByAge(int age, Pageable pageable);
 
 }
