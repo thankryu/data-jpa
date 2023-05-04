@@ -11,6 +11,7 @@ import study.datajpa.entity.Team;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -151,5 +152,27 @@ class MemberRepositoryTest {
         for(Member member : result){
             System.out.println("member = "+member);
         }
+    }
+
+    @Test
+    public void returnType(){
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+        
+        // 컬렉션 조회 => 특이사항 null 이 아님. 없을떄 empty 반환
+        List<Member> aaa = memberRepository.findListByUsername("AAA");
+        
+        // 단건 조회 => 없으면 null 이 반환
+        Member findMember = memberRepository.findMemberByUsername("AAA");
+        System.out.println("findMember = "+findMember);
+
+        // 단건 optional 조회 : 권장
+        Optional<Member> optionalMember = memberRepository.findOptionalByUsername("AAA");
+        System.out.println("findMember Optional = "+optionalMember);
+
+
+        
     }
 }
