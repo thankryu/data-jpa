@@ -10,6 +10,10 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(of = {"id", "username", "age"}) // team 쓰면 큰일남 무한루프: 연관관계가 있을떄 ToString 쓰지 말자
+@NamedQuery(
+        name ="Member.findByUsername",
+        query = "select m from Member m where m.username =:username"
+) // 실무에서 많이 않씀 :: 장점 문법 오류를 잡아줌
 public class Member {
 
     @Id
