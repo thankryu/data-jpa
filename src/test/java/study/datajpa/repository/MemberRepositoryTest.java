@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +12,8 @@ import study.datajpa.dto.MemberDto;
 import study.datajpa.entity.Member;
 import study.datajpa.entity.Team;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +30,9 @@ class MemberRepositoryTest {
 
     @Autowired
     TeamRepository teamRepository;
+
+    @PersistenceContext
+    EntityManager em;
 
     @Test
     public void testMember(){
@@ -207,5 +211,30 @@ class MemberRepositoryTest {
         assertThat(page.getTotalElements()).isEqualTo(5);
         assertThat(page.getTotalPages()).isEqualTo(2);
 
+    }
+
+    @Test
+    public void bulkUpdate(){
+        memberRepository.save(new Member("member1", 10));
+        memberRepository.save(new Member("member2", 19));
+        memberRepository.save(new Member("member3", 20));
+        memberRepository.save(new Member("member4", 21));
+        memberRepository.save(new Member("member5", 40));
+
+        // jpql 을 적으면 DB에 적용하고 jpql 을 적용한다 순서 주의
+        // bulk 연산은 DB에 강제로 집어넣음 : 영속성 컨텍스트 충돌이 우려된다
+        int resultCount = memberRepository.bulkAgePlus(20);
+        
+        // 아래 작업들로 영속성 컨텍스트를 날리고 해야 제대로 된 값을 얻을 수 있다
+        // @Modifying(clearAutomatically = true) 일때는 하단 내용을 자동으로 처리해 준다
+//        em.flush();
+//        em.clear();
+
+        List<Member> result = memberRepository.findByUsername("member5");
+
+        Member member5 = result.get(0);
+        System.out.println("member5::"+member5);
+
+        assertThat(resultCount).isEqualTo(3);
     }
 }
