@@ -237,4 +237,57 @@ class MemberRepositoryTest {
 
         assertThat(resultCount).isEqualTo(3);
     }
+
+    @Test
+    public void findMemberLazy(){
+
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamB");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member2", 10, teamB);
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+        // when N + 1
+        // select Member 1
+        // List<Member> members = memberRepository.findAll(); // 변경 전
+        // 해결책 fetch join 적용 = 특이점 + join + select 절에 자동적으로 추가를 함
+        // List<Member> members = memberRepository.findMemberFetchJoin();
+
+        // @EntityGraph 적용
+        List<Member> members = memberRepository.findAll();
+
+        for (Member member : members) {
+            System.out.println("member = "+member.getUsername());
+            System.out.println("member.teamClass = "+member.getTeam().getClass());
+            System.out.println("member.team = "+member.getTeam().getName());
+        }
+
+        // 많이 씀
+        System.out.println("-------------------------EntityGraph + Where-------------------------");
+        List<Member> members2 = memberRepository.findEntityGraphByUsername("member1");
+
+        for (Member member : members2) {
+            System.out.println("member = "+member.getUsername());
+            System.out.println("member.teamClass = "+member.getTeam().getClass());
+            System.out.println("member.team = "+member.getTeam().getName());
+        }
+
+        // 많이 안씀
+        System.out.println("-------------------------NamedEntityGraph-------------------------");
+        List<Member> members3 = memberRepository.findEntityGraphNamedByUsername("member1");
+
+        for (Member member : members3) {
+            System.out.println("member = "+member.getUsername());
+            System.out.println("member.teamClass = "+member.getTeam().getClass());
+            System.out.println("member.team = "+member.getTeam().getName());
+        }
+
+    }
 }
