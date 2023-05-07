@@ -15,7 +15,7 @@ import javax.persistence.*;
         query = "select m from Member m where m.username =:username"
 ) // 실무에서 많이 않씀 :: 장점 문법 오류를 잡아줌
 @NamedEntityGraph(name = "Member.all", attributeNodes = @NamedAttributeNode("team"))
-public class Member {
+public class Member extends JpaBaseEntity{
 
     @Id
     @GeneratedValue
