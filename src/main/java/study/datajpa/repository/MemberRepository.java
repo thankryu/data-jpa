@@ -18,7 +18,7 @@ import java.util.Optional;
  * 화면에 맞춘 복잡한 쿼리, 핵심 비지니스 쿼리
  * Repository 를 나누는것을 추천합니다!
  */
-public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom, JpaSpecificationExecutor {
 
     List<Member> findByUsernameAndAgeGreaterThan(String username, int age);
 
