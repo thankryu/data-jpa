@@ -290,4 +290,37 @@ class MemberRepositoryTest {
         }
 
     }
+
+    @Test
+    public void queryHint(){
+        // given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        // when
+        // 읽기 최적화만 되어 사용, 변경 감지 사용안됨
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        em.flush();
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
