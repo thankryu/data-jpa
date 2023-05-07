@@ -72,9 +72,16 @@ class MemberTest {
         // when
         Member findMember = memberRepository.findById(member.getId()).get();
 
+
         // then
+        // JpaBaseEntity 사용 시 예제
+        // System.out.println("findMember.updatedDate = " + findMember.getUpdatedDate());
+
+        // BaseEntity 사용 시 예제
         System.out.println("findMember.createdDate = " + findMember.getCreatedDate());
-        System.out.println("findMember.updatedDate = " + findMember.getUpdatedDate());
+        System.out.println("findMember.updatedDate = " + findMember.getLastModifiedDate());
+        System.out.println("findMember.createdBy = " + findMember.getCreatedBy());
+        System.out.println("findMember.lastModifiedBy = " + findMember.getLastModifiedBy());
     }
 
 }
