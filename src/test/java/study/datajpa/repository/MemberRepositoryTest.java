@@ -305,6 +305,18 @@ class MemberRepositoryTest {
 
         em.flush();
     }
+
+    @Test
+    public void lock(){
+        // given
+        Member member1 = memberRepository.save(new Member("member1", 10));
+        em.flush();
+        em.clear();
+
+        // when
+        // 읽기 최적화만 되어 사용, 변경 감지 사용안됨
+        Member result = memberRepository.findLockByUsername("member1");
+    }
 }
 
 
