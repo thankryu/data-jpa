@@ -34,6 +34,10 @@ class MemberRepositoryTest {
     @PersistenceContext
     EntityManager em;
 
+    // 임의의 repository 생성도 사용가능 예제
+    @Autowired
+    MemberQueryRepository memberQueryRepository;
+
     @Test
     public void testMember(){
         Member member = new Member("memberA");
@@ -316,6 +320,11 @@ class MemberRepositoryTest {
         // when
         // 읽기 최적화만 되어 사용, 변경 감지 사용안됨
         Member result = memberRepository.findLockByUsername("member1");
+    }
+
+    @Test
+    public void callCustom(){
+        List<Member> result = memberRepository.findMemberCustom();
     }
 }
 
