@@ -380,6 +380,47 @@ class MemberRepositoryTest {
 
         assertThat(result.get(0).getUsername()).isEqualTo("m1");
     }
+
+    @Test
+    public void projections(){
+        // given
+        Team teamA = new Team("teamA");
+        em.persist(teamA);
+
+        Member m1 = new Member("m1", 0, teamA);
+        Member m2 = new Member("m2", 0, teamA);
+
+        em.persist(m1);
+        em.persist(m2);
+
+        em.flush();
+        em.clear();
+
+        // when
+        // 인터페이스 방식
+        List<UsernameOnly> resultInter = memberRepository.findProjectionsByUsername("m1");
+
+        // 클래스 DTO 방식
+        List<UsernameOnlyDto> resultDto = memberRepository.findProjectionsDtoByUsername("m1");
+
+        // 동적기반
+        List<UsernameOnlyDto> resultType = memberRepository.findProjectionsDtoTypeByUsername("m1", UsernameOnlyDto.class);
+
+        for (UsernameOnlyDto usernameOnlyDto : resultType) {
+            System.out.println("usernameOnlyDto::" + usernameOnlyDto);
+        }
+        
+        // 중첩 구조 처리
+        // 안쪽은 최적화가 적용되지 않는 한계가 있다 Root 만 최적화!
+        List<NestedClosedProjections> resultOverlap = memberRepository.findProjectionsDtoTypeByUsername("m1", NestedClosedProjections.class);
+
+        for (NestedClosedProjections nestedClosedProjections : resultOverlap) {
+            String username = nestedClosedProjections.getUsername();
+            System.out.println("username = "+username);
+            String teamName = nestedClosedProjections.getTeam().getName();
+            System.out.println("teamName = "+teamName);
+        }
+    }
 }
 
 
